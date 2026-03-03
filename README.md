@@ -1,16 +1,25 @@
 # turtlebot
 
-A tiny, Pi-friendly assistant runtime inspired by OpenClaw ideas.
+![Version](https://img.shields.io/badge/version-0.2.0-57c784)
+![Runtime](https://img.shields.io/badge/runtime-Node%2020%2B-2f6b4f)
+![License](https://img.shields.io/badge/license-MIT-9bc3aa)
+![Mode](https://img.shields.io/badge/interface-TUI--first-57c784)
 
-## v0 Scope
+A lightweight, Raspberry Pi–friendly assistant runtime inspired by OpenClaw, designed for terminal-first workflows.
 
-- Single-agent loop
-- Optional Telegram polling adapter
-- Small tool runtime (`read_file`, `write_file`, `exec`)
-- Flat-file memory in `workspace/memory/`
-- Ollama-first model routing (`qwen3:4b` + `lfm2.5-thinking`)
-- Exec safety gates (dangerous command block + optional allowlist)
-- No UI in first build
+---
+
+## Quick links
+
+- [Quick start](#quick-start)
+- [Terminal UI](#terminal-ui-recommended)
+- [Bootstrap install](#bootstrap-curl)
+- [Install path chooser](#install-path-chooser)
+- [Model providers](#model-providers)
+- [Commands](#telegramcli-commands)
+- [Changelog](./CHANGELOG.md)
+
+---
 
 ## Quick start
 
@@ -27,7 +36,7 @@ npm run start
 npm run tui
 ```
 
-Minimal mode (better for tiny Pi terminals):
+Minimal mode (for small Pi terminals):
 
 ```bash
 npm run tui:min
@@ -37,6 +46,8 @@ TUI keybinds:
 - `Ctrl+C` quit
 - `Ctrl+K` clear chat pane
 - `/help` command list
+
+---
 
 ## Bootstrap (curl)
 
@@ -59,37 +70,28 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
   INSTALL_DIR=$HOME/my-turtlebot BRANCH=main bash
 ```
 
-## Installer scripts
+---
 
-```bash
-# interactive env setup
-bash scripts/setup-config.sh
+## Install path chooser
 
-# preflight checks
-bash scripts/preflight.sh
+| Goal | Command |
+|---|---|
+| Configure `.env` interactively | `bash scripts/setup-config.sh` |
+| Preflight checks | `bash scripts/preflight.sh` |
+| Install as system service | `sudo bash scripts/install.sh` |
+| Update existing install (rollback on failure) | `sudo bash scripts/update.sh` |
+| Full installer (deps + node + service) | `sudo bash scripts/install-full.sh` |
+| Health check | `bash scripts/doctor.sh` |
+| Self-test | `bash scripts/self-test.sh` |
+| Uninstall | `sudo bash scripts/uninstall.sh` |
 
-# install as service on Raspberry Pi / Linux
-sudo bash scripts/install.sh
+---
 
-# update existing install (with rollback on failure)
-sudo bash scripts/update.sh
+## Model providers
 
-# full installer (installs prerequisites + node + turtlebot service)
-sudo bash scripts/install-full.sh
+Default provider is local Ollama (`http://127.0.0.1:11434`).
 
-# health checks
-bash scripts/doctor.sh
-
-# self-test
-bash scripts/self-test.sh
-
-# remove service + app files
-sudo bash scripts/uninstall.sh
-```
-
-By default, TurtleBot uses local Ollama on `http://127.0.0.1:11434`.
-
-If you prefer OpenAI, set:
+### OpenAI
 
 ```env
 MODEL_PROVIDER=openai
@@ -98,7 +100,7 @@ MODEL=gpt-4.1
 THINK_MODEL=gpt-4.1
 ```
 
-If you prefer Claude, set:
+### Anthropic (Claude)
 
 ```env
 MODEL_PROVIDER=anthropic
@@ -107,23 +109,29 @@ MODEL=claude-sonnet-4-5
 THINK_MODEL=claude-opus-4-1
 ```
 
+---
+
 ## Telegram mode
 
 1. Create a bot token with BotFather
 2. Put `TELEGRAM_BOT_TOKEN` in `.env`
 3. Start app and message your bot
 
+---
+
 ## Raspberry Pi notes
 
-- Works with Node 20+
-- Keep model lightweight (e.g. `qwen3:4b` default)
-- Deploy with:
+- Node 20+
+- Lightweight dependency footprint
+- TUI works in regular + minimal mode
+- Systemd service unit: `scripts/turtlebot.service`
+- Pi install helper:
 
 ```bash
 sudo bash scripts/install-pi.sh
 ```
 
-- Service file: `scripts/turtlebot.service`
+---
 
 ## Exec safety modes
 
@@ -133,12 +141,16 @@ Configure in `.env`:
 - `EXEC_POLICY=confirm` (command must include `EXEC_CONFIRM_TOKEN`)
 - `EXEC_POLICY=off` (disable exec)
 
+---
+
 ## Branding assets
 
-Included under `assets/branding/` for TUI and future docs:
+Included under `assets/branding/`:
 - `turtlebot-mark.svg`
 - `turtlebot-mascot.svg`
 - `theme-tokens.json`
+
+---
 
 ## Telegram/CLI commands
 
@@ -150,7 +162,9 @@ Included under `assets/branding/` for TUI and future docs:
 - `/pin <note>`
 - `/clear`
 
+---
+
 ## Roadmap
 
 - `v0.2.x`: stability, provider ergonomics, richer TUI interactions
-- `v0.3.x`: plugin permissions profiles + advanced command palette
+- `v0.3.x`: plugin permission profiles + advanced command palette
