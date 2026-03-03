@@ -65,8 +65,14 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 # interactive env setup
 bash scripts/configure.sh
 
+# preflight checks
+bash scripts/preflight.sh
+
 # install as service on Raspberry Pi / Linux
 sudo bash scripts/install.sh
+
+# update existing install (with rollback on failure)
+sudo bash scripts/update.sh
 
 # full installer (installs prerequisites + node + turtlebot service)
 sudo bash scripts/installer-full.sh

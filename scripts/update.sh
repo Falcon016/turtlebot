@@ -4,27 +4,35 @@ set -euo pipefail
 APP_DIR="${APP_DIR:-/opt/turtlebot}"
 SERVICE_NAME="turtlebot.service"
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+BACKUP_DIR="${APP_DIR}.backup.$(date +%Y%m%d-%H%M%S)"
+UPDATED=0
 
-need_cmd() { command -v "$1" >/dev/null 2>&1 || { echo "Missing required command: $1"; exit 1; }; }
+rollback() {
+  if [[ "$UPDATED" -eq 1 ]]; then
+    echo "[ROLLBACK] restoring previous app dir from $BACKUP_DIR"
+    rm -rf "$APP_DIR"
+    mv "$BACKUP_DIR" "$APP_DIR"
+    systemctl restart "$SERVICE_NAME" || true
+  fi
+}
+
+trap 'echo "[ERR] update failed"; rollback' ERR
 
 if [[ "${EUID}" -ne 0 ]]; then
-  echo "Run with sudo: sudo bash scripts/install.sh"
+  echo "Run with sudo: sudo bash scripts/update.sh"
   exit 1
 fi
 
 bash "$ROOT_DIR/scripts/preflight.sh"
 
-NODE_MAJOR="$(node -v | sed 's/v//' | cut -d. -f1)"
-if [[ "$NODE_MAJOR" -lt 20 ]]; then
-  echo "Node 20+ required. Found: $(node -v)"
+if [[ ! -d "$APP_DIR" ]]; then
+  echo "No existing install at $APP_DIR. Use install.sh first."
   exit 1
 fi
 
-if systemctl list-unit-files | grep -q "^$SERVICE_NAME"; then
-  systemctl stop "$SERVICE_NAME" || true
-fi
+cp -a "$APP_DIR" "$BACKUP_DIR"
+UPDATED=1
 
-mkdir -p "$APP_DIR"
 rsync -a --delete \
   --exclude node_modules \
   --exclude .env \
@@ -34,15 +42,12 @@ rsync -a --delete \
 cd "$APP_DIR"
 npm ci --omit=dev || npm install --omit=dev
 
-if [[ ! -f "$APP_DIR/.env" ]]; then
-  cp "$APP_DIR/.env.example" "$APP_DIR/.env"
-  echo "Created $APP_DIR/.env (edit this before production use)."
-fi
-
 install -m 644 "$APP_DIR/scripts/turtlebot.service" "/etc/systemd/system/$SERVICE_NAME"
 systemctl daemon-reload
-systemctl enable "$SERVICE_NAME"
 systemctl restart "$SERVICE_NAME"
 
-echo "Install complete."
+rm -rf "$BACKUP_DIR"
+UPDATED=0
+
+echo "Update complete."
 systemctl status "$SERVICE_NAME" --no-pager || true
