@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-9bc3aa)
 ![Mode](https://img.shields.io/badge/interface-TUI--first-57c784)
 
-A lightweight, Raspberry Pi–friendly assistant runtime inspired by OpenClaw, designed for terminal-first workflows.
+A lightweight, Raspberry Pi–friendly assistant runtime designed for terminal-first workflows.
 
 <p align="center">
   <img src="assets/branding/turtlebot-mascot.svg" alt="TurtleBot mascot" width="180" />
