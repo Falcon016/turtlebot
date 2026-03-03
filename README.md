@@ -21,6 +21,22 @@ npm install
 npm run start
 ```
 
+## Installer scripts
+
+```bash
+# interactive env setup
+bash scripts/configure.sh
+
+# install as service on Raspberry Pi / Linux
+sudo bash scripts/install.sh
+
+# health checks
+bash scripts/doctor.sh
+
+# remove service + app files
+sudo bash scripts/uninstall.sh
+```
+
 By default, TurtleBot uses local Ollama on `http://127.0.0.1:11434`.
 If you prefer OpenAI, set:
 
