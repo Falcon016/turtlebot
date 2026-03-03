@@ -24,20 +24,49 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
       ' 🐢 {bold}TurtleBot{/bold}  {#9bc3aa-fg}v0.2 beta{/}   {#57c784-fg}[TUI-FIRST]{/}\n {gray-fg}Ctrl+C quit • Ctrl+K clear • /help commands{/gray-fg}'
   });
 
-  const status = blessed.box({
+  const sidebar = blessed.box({
     top: 3,
     left: 0,
-    width: '100%',
-    height: 4,
+    width: 30,
+    bottom: 3,
     tags: true,
     border: { type: 'line' },
-    style: { border: { fg: turtleTheme.border }, bg: turtleTheme.bg, fg: turtleTheme.muted }
+    label: ' overview ',
+    style: {
+      border: { fg: turtleTheme.border },
+      bg: turtleTheme.panel,
+      fg: turtleTheme.text
+    }
   });
 
-  const log = blessed.log({
-    top: 7,
+  const statusCard = blessed.box({
+    parent: sidebar,
+    top: 0,
     left: 0,
-    width: '100%',
+    width: '100%-2',
+    height: 9,
+    tags: true,
+    content: ''
+  });
+
+  const quickHelp = blessed.box({
+    parent: sidebar,
+    top: 9,
+    left: 0,
+    width: '100%-2',
+    height: '100%-11',
+    tags: true,
+    content:
+      '{#57c784-fg}{bold}sections{/bold}{/}\n' +
+      ' • Chat\n • Status\n • Logs\n\n' +
+      '{#57c784-fg}{bold}shortcuts{/bold}{/}\n' +
+      ' • /help\n • /status\n • /model\n • /mode ollama|openai\n • /pin <note>\n • /clear'
+  });
+
+  const chat = blessed.log({
+    top: 3,
+    left: 30,
+    width: '100%-30',
     bottom: 3,
     tags: true,
     border: { type: 'line' },
@@ -70,8 +99,8 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
   });
 
   screen.append(header);
-  screen.append(status);
-  screen.append(log);
+  screen.append(sidebar);
+  screen.append(chat);
   screen.append(input);
 
   function busyToken() {
@@ -84,20 +113,28 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
     return `{#9bc3aa-fg}latency=${lastLatencyMs}ms{/}`;
   }
 
-  function refreshStatus() {
-    const text = getStatus();
-    const top = `${busyToken()}   ${latencyToken()}`;
-    status.setContent(` ${top}\n ${text.replace(/\n/g, '\n ')}`);
+  function renderOverview() {
+    const statusText = getStatus().split('\n').join('\n ');
+    statusCard.setContent(
+      '{#57c784-fg}{bold}runtime{/bold}{/}\n' +
+        ` ${busyToken()}\n` +
+        ` ${latencyToken()}\n\n` +
+        ` ${statusText}\n\n` +
+        '{#57c784-fg}{bold}release{/bold}{/}\n' +
+        ' v0.2.0-beta\n' +
+        ' tui-only\n' +
+        ' pi-friendly'
+    );
   }
 
   function render() {
-    refreshStatus();
+    renderOverview();
     screen.render();
   }
 
   function say(role, text) {
     const color = role === 'you' ? turtleTheme.accent : turtleTheme.text;
-    log.add(`{${color}-fg}${role}>{/${color}-fg} ${text}`);
+    chat.add(`{${color}-fg}${role}>{/${color}-fg} ${text}`);
     render();
   }
 
@@ -147,7 +184,7 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
 
   screen.key(['C-c'], () => process.exit(0));
   screen.key(['C-k'], () => {
-    log.setContent('');
+    chat.setContent('');
     render();
   });
 
