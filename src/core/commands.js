@@ -1,4 +1,5 @@
 import { appendMemory } from './memory.js';
+import { providersStatus } from './providers.js';
 
 export async function handleCommand({ text, config, state, history }) {
   const trimmed = text.trim();
@@ -10,7 +11,8 @@ export async function handleCommand({ text, config, state, history }) {
       '/help',
       '/status',
       '/model',
-      '/mode ollama|openai',
+      '/providers',
+      '/mode ollama|openai|anthropic',
       '/pin <note>',
       '/clear'
     ].join('\n');
@@ -27,6 +29,10 @@ export async function handleCommand({ text, config, state, history }) {
   }
 
   if (trimmed === '/model') return `model=${state.model}\nthinkModel=${state.thinkModel}`;
+
+  if (trimmed === '/providers') {
+    return providersStatus(config, state);
+  }
 
   if (trimmed === '/clear') {
     history.length = 0;

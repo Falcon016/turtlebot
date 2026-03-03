@@ -133,6 +133,7 @@ Included under `assets/branding/` for TUI and future docs:
 - `/help`
 - `/status`
 - `/model`
+- `/providers`
 - `/mode ollama|openai|anthropic`
 - `/pin <note>`
 - `/clear`

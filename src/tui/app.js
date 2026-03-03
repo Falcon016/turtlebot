@@ -21,7 +21,7 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
     tags: true,
     style: { fg: turtleTheme.text, bg: turtleTheme.panel },
     content:
-      ' 🐢 {bold}TurtleBot{/bold}  {#9bc3aa-fg}v0.2 beta{/}   {#57c784-fg}[TUI-FIRST]{/}\n {gray-fg}Ctrl+C quit • Ctrl+K clear • /help commands{/gray-fg}'
+      ' 🐢 {bold}TurtleBot{/bold}  {#9bc3aa-fg}v0.2 beta{/}   {#57c784-fg}[TUI-FIRST]{/}   🐢\n {gray-fg}Ctrl+C quit • Ctrl+K clear • /help commands{/gray-fg}'
   });
 
   const sidebar = blessed.box({
@@ -57,10 +57,11 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
     height: '100%-11',
     tags: true,
     content:
-      '{#57c784-fg}{bold}sections{/bold}{/}\n' +
-      ' • Chat\n • Status\n • Logs\n\n' +
+      '{#57c784-fg}{bold}tiny turtles{/bold}{/}\n' +
+      '  𓆉  shell mode\n' +
+      '  🐢  chat mode\n\n' +
       '{#57c784-fg}{bold}shortcuts{/bold}{/}\n' +
-      ' • /help\n • /status\n • /model\n • /mode ollama|openai\n • /pin <note>\n • /clear'
+      ' • /help\n • /status\n • /model\n • /providers\n • /mode ollama|openai|anthropic\n • /pin <note>\n • /clear'
   });
 
   const chat = blessed.log({
