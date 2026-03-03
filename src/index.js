@@ -1,101 +1,59 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import readline from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
+import { stdin as input, stdout as output, argv } from 'node:process';
 
 import { loadConfig } from './core/config.js';
 import { createLogger } from './utils/logger.js';
 import { runTurn } from './core/agent.js';
 import { appendMemory } from './core/memory.js';
+import { handleCommand } from './core/commands.js';
 import { getUpdates, sendMessage } from './adapters/telegram.js';
+import { createTui } from './tui/app.js';
 
 const config = loadConfig();
 const logger = createLogger(config.logLevel);
 const history = [];
 
-let runtimeProvider = config.modelProvider;
-let runtimeModel = config.model;
-let runtimeThinkModel = config.thinkModel;
+const state = {
+  provider: config.modelProvider,
+  model: config.model,
+  thinkModel: config.thinkModel
+};
 
 await fs.mkdir(config.workspaceDir, { recursive: true });
 await fs.mkdir(path.join(config.workspaceDir, 'memory'), { recursive: true });
-
-function activeConfig() {
-  return {
-    ...config,
-    modelProvider: runtimeProvider,
-    model: runtimeModel,
-    thinkModel: runtimeThinkModel
-  };
-}
 
 function pushHistory(role, content) {
   history.push({ role, content });
   while (history.length > config.maxHistory) history.shift();
 }
 
-function statusText() {
-  return [
-    `provider=${runtimeProvider}`,
-    `model=${runtimeModel}`,
-    `thinkModel=${runtimeThinkModel}`,
-    `history=${history.length}/${config.maxHistory}`,
-    `execPolicy=${config.execPolicy}`,
-    `workspace=${config.workspaceDir}`
-  ].join('\n');
-}
-
-function helpText() {
-  return [
-    'TurtleBot commands:',
-    '/help - show commands',
-    '/status - runtime status',
-    '/model - show active models',
-    '/mode ollama|openai - switch provider for this runtime',
-    '/pin <text> - save important memory note',
-    '/clear - clear in-memory chat history'
-  ].join('\n');
-}
-
-async function handleCommand(text) {
-  const trimmed = text.trim();
-  if (!trimmed.startsWith('/')) return null;
-
-  if (trimmed === '/help') return helpText();
-  if (trimmed === '/status') return statusText();
-  if (trimmed === '/model') return `model=${runtimeModel}\nthinkModel=${runtimeThinkModel}`;
-  if (trimmed === '/clear') {
-    history.length = 0;
-    return 'History cleared.';
-  }
-  if (trimmed.startsWith('/mode ')) {
-    const mode = trimmed.slice(6).trim().toLowerCase();
-    if (!['ollama', 'openai'].includes(mode)) return 'Usage: /mode ollama|openai';
-    runtimeProvider = mode;
-    if (mode === 'openai' && !config.openAiApiKey) {
-      return 'Switched to openai mode, but OPENAI_API_KEY is missing.';
-    }
-    return `Switched mode to ${mode}.`;
-  }
-  if (trimmed.startsWith('/pin ')) {
-    const note = trimmed.slice(5).trim();
-    if (!note) return 'Usage: /pin <important note>';
-    await appendMemory(config.workspaceDir, `[PIN] ${note}`);
-    return 'Pinned to memory.';
-  }
-
-  return 'Unknown command. Use /help';
+function activeConfig() {
+  return {
+    ...config,
+    modelProvider: state.provider,
+    model: state.model,
+    thinkModel: state.thinkModel
+  };
 }
 
 function providerReady(cfg) {
-  if (cfg.modelProvider === 'openai') {
-    return Boolean(cfg.openAiApiKey);
-  }
-  return true;
+  return cfg.modelProvider !== 'openai' || Boolean(cfg.openAiApiKey);
+}
+
+function statusText() {
+  return [
+    `provider=${state.provider}`,
+    `model=${state.model}`,
+    `think=${state.thinkModel}`,
+    `history=${history.length}/${config.maxHistory}`,
+    `exec=${config.execPolicy}`
+  ].join('\n');
 }
 
 async function handleText(text) {
-  const cmdReply = await handleCommand(text);
+  const cmdReply = await handleCommand({ text, config, state, history });
   if (cmdReply !== null) return cmdReply;
 
   const cfg = activeConfig();
@@ -143,7 +101,18 @@ async function runCli() {
   rl.close();
 }
 
-if (config.telegramBotToken) {
+function runTui() {
+  logger.info('Starting TUI mode');
+  createTui({
+    onSubmit: handleText,
+    onCommand: (text) => handleCommand({ text, config, state, history }),
+    getStatus: statusText
+  });
+}
+
+if (argv.includes('--tui') || argv.includes('tui')) {
+  runTui();
+} else if (config.telegramBotToken) {
   runTelegram();
 } else {
   runCli();
