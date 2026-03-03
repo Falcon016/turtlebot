@@ -30,9 +30,9 @@ ok "Node version $(node -v)"
 
 if [[ "$(uname -s)" == "Linux" ]]; then
   if systemctl list-unit-files | grep -q '^turtlebot.service'; then
-    ok "systemd unit turtlebot.service detected"
+    ok "Systemd unit detected: TurtleBot service (turtlebot.service)"
   else
-    warn "turtlebot.service not installed yet"
+    warn "TurtleBot service not installed yet (turtlebot.service)"
   fi
 fi
 
