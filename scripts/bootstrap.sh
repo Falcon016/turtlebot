@@ -28,6 +28,6 @@ fi
 
 echo "Run these next:"
 echo "  cd $INSTALL_DIR"
-echo "  bash scripts/configure.sh"
+echo "  bash scripts/setup-config.sh"
 echo "  sudo bash scripts/install.sh"
 echo "  bash scripts/doctor.sh"
