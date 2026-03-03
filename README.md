@@ -51,6 +51,9 @@ bash scripts/configure.sh
 # install as service on Raspberry Pi / Linux
 sudo bash scripts/install.sh
 
+# full installer (installs prerequisites + node + turtlebot service)
+sudo bash scripts/installer-full.sh
+
 # health checks
 bash scripts/doctor.sh
 
@@ -95,6 +98,15 @@ Configure in `.env`:
 - `EXEC_POLICY=allowlist` (recommended)
 - `EXEC_POLICY=confirm` (command must include `EXEC_CONFIRM_TOKEN`)
 - `EXEC_POLICY=off` (disable exec)
+
+## Telegram/CLI commands
+
+- `/help`
+- `/status`
+- `/model`
+- `/mode ollama|openai`
+- `/pin <note>`
+- `/clear`
 
 ## Next steps
 
