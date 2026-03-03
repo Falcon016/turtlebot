@@ -45,4 +45,4 @@ echo "[5/6] Running doctor"
 bash scripts/doctor.sh || true
 
 echo "[6/6] Done"
-echo "Edit /opt/turtlebot/.env as needed, then: systemctl restart turtlebot.service"
+echo "Edit /opt/turtlebot/.env as needed, then run: systemctl restart turtlebot.service (TurtleBot service)"

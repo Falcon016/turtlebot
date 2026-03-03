@@ -30,12 +30,12 @@ fi
 
 if systemctl list-unit-files 2>/dev/null | grep -q '^turtlebot.service'; then
   if systemctl is-active --quiet turtlebot.service; then
-    pass "turtlebot.service active"
+    pass "TurtleBot service active (turtlebot.service)"
   else
-    warn "turtlebot.service installed but not active"
+    warn "TurtleBot service installed but not active (turtlebot.service)"
   fi
 else
-  warn "turtlebot.service not installed"
+  warn "TurtleBot service not installed (turtlebot.service)"
 fi
 
 echo "Smoke test complete."
