@@ -35,9 +35,10 @@ else
   git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$INSTALL_DIR"
 fi
 
-echo "[4/6] Running TurtleBot configure/install"
+echo "[4/6] Running preflight + install"
 cd "$INSTALL_DIR"
 [[ -f .env ]] || cp .env.example .env
+bash scripts/preflight.sh
 bash scripts/install.sh
 
 echo "[5/6] Running doctor"
