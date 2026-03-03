@@ -8,7 +8,7 @@
 - Added installer suite:
   - `bootstrap.sh` + `bootstrap-safe.sh`
   - `install.sh`, `update.sh` (rollback support), `uninstall.sh`
-  - `configure.sh`, `preflight.sh`, `doctor.sh`, `smoke-test.sh`
+  - `setup-config.sh`, `preflight.sh`, `doctor.sh`, `self-test.sh`
 - Added Pi-focused deployment flow and hardened preflight behavior
 - Added branding assets for turtle-themed identity
 

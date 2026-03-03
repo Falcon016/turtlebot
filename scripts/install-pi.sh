@@ -5,7 +5,7 @@ APP_DIR="/opt/turtlebot"
 SERVICE_FILE="turtlebot.service"
 
 if [[ "${EUID}" -ne 0 ]]; then
-  echo "Run as root: sudo bash scripts/deploy-pi.sh"
+  echo "Run as root: sudo bash scripts/install-pi.sh"
   exit 1
 fi
 
