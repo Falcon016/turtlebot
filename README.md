@@ -27,6 +27,12 @@ npm run start
 npm run tui
 ```
 
+Minimal mode (better for tiny Pi terminals):
+
+```bash
+npm run tui:min
+```
+
 TUI keybinds:
 - `Ctrl+C` quit
 - `Ctrl+K` clear chat pane

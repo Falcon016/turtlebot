@@ -1,7 +1,7 @@
 import blessed from 'blessed';
 import { turtleTheme } from './theme.js';
 
-export function createTui({ onSubmit, onCommand, getStatus }) {
+export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
   const screen = blessed.screen({
     smartCSR: true,
     title: 'TurtleBot'
@@ -24,14 +24,17 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
       ' 🐢 {bold}TurtleBot{/bold}  {#9bc3aa-fg}v0.2 beta{/}   {#57c784-fg}[TUI-FIRST]{/}   🐢\n {gray-fg}Ctrl+C quit • Ctrl+K clear • /help commands{/gray-fg}'
   });
 
+  const sidebarWidth = minimal ? 0 : 30;
+
   const sidebar = blessed.box({
     top: 3,
     left: 0,
-    width: 30,
+    width: sidebarWidth,
     bottom: 3,
     tags: true,
     border: { type: 'line' },
     label: ' overview ',
+    hidden: minimal,
     style: {
       border: { fg: turtleTheme.border },
       bg: turtleTheme.panel,
@@ -66,8 +69,8 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
 
   const chat = blessed.log({
     top: 3,
-    left: 30,
-    width: '100%-30',
+    left: sidebarWidth,
+    width: `100%-${sidebarWidth}`, 
     bottom: 3,
     tags: true,
     border: { type: 'line' },
@@ -116,16 +119,21 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
 
   function renderOverview() {
     const statusText = getStatus().split('\n').join('\n ');
-    statusCard.setContent(
-      '{#57c784-fg}{bold}runtime{/bold}{/}\n' +
-        ` ${busyToken()}\n` +
-        ` ${latencyToken()}\n\n` +
-        ` ${statusText}\n\n` +
-        '{#57c784-fg}{bold}release{/bold}{/}\n' +
-        ' v0.2.0-beta\n' +
-        ' tui-only\n' +
-        ' pi-friendly'
-    );
+    if (!minimal) {
+      statusCard.setContent(
+        '{#57c784-fg}{bold}runtime{/bold}{/}\n' +
+          ` ${busyToken()}\n` +
+          ` ${latencyToken()}\n\n` +
+          ` ${statusText}\n\n` +
+          '{#57c784-fg}{bold}release{/bold}{/}\n' +
+          ' v0.2.0-beta\n' +
+          ' tui-only\n' +
+          ' pi-friendly'
+      );
+      chat.setLabel(' chat ');
+    } else {
+      chat.setLabel(` chat  ${busyToken()}  ${latencyToken()} `);
+    }
   }
 
   function render() {
@@ -191,5 +199,5 @@ export function createTui({ onSubmit, onCommand, getStatus }) {
 
   input.focus();
   render();
-  say('bot', 'TUI ready. Type /help for commands.');
+  say('bot', minimal ? 'Minimal TUI ready. Type /help for commands.' : 'TUI ready. Type /help for commands.');
 }
