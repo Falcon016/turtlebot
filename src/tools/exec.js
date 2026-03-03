@@ -22,17 +22,33 @@ function isAllowlisted(command, allowlist) {
   return allowlist.some((prefix) => command.trim().startsWith(prefix));
 }
 
-export async function execTool({ command, cwd, allowExec = true, allowlist = [] }) {
-  if (!allowExec) {
-    throw new Error('exec tool is disabled by config (ALLOW_EXEC=false)');
+function hasConfirmToken(command, token) {
+  if (!token) return true;
+  return command.includes(token);
+}
+
+export async function execTool({
+  command,
+  cwd,
+  allowExec = true,
+  policy = 'allowlist',
+  allowlist = [],
+  confirmToken = ''
+}) {
+  if (!allowExec || policy === 'off') {
+    throw new Error('exec tool is disabled by config');
   }
 
   if (isBlocked(command)) {
     throw new Error('Blocked potentially dangerous command');
   }
 
-  if (!isAllowlisted(command, allowlist)) {
+  if (policy === 'allowlist' && !isAllowlisted(command, allowlist)) {
     throw new Error('Command not in EXEC_ALLOWLIST');
+  }
+
+  if (policy === 'confirm' && !hasConfirmToken(command, confirmToken)) {
+    throw new Error('Command missing EXEC_CONFIRM_TOKEN');
   }
 
   const { stdout, stderr } = await execAsync(command, { cwd, timeout: 20_000 });

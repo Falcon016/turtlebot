@@ -39,11 +39,25 @@ MODEL=openai/gpt-4.1-mini
 ## Raspberry Pi notes
 
 - Works with Node 20+
-- Keep model lightweight (e.g. mini models / local model proxy)
-- Run with systemd (sample unit in `scripts/turtlebot.service`)
+- Keep model lightweight (e.g. `qwen3:4b` default)
+- Deploy with:
+
+```bash
+sudo bash scripts/deploy-pi.sh
+```
+
+- Service file: `scripts/turtlebot.service`
+
+## Exec safety modes
+
+Configure in `.env`:
+
+- `EXEC_POLICY=allowlist` (recommended)
+- `EXEC_POLICY=confirm` (command must include `EXEC_CONFIRM_TOKEN`)
+- `EXEC_POLICY=off` (disable exec)
 
 ## Next steps
 
-- Add local model routing (`ollama` first)
-- Add command permissions/safeguards
-- Add web UI from your turtle design (phase 2)
+- Add your turtle UI as optional web dashboard
+- Add role-based tool permissions
+- Add end-to-end tests + release workflow
