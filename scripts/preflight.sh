@@ -14,7 +14,12 @@ need_cmd git
 need_cmd rsync
 need_cmd node
 need_cmd npm
-need_cmd systemctl
+
+if [[ "$(uname -s)" == "Linux" ]]; then
+  need_cmd systemctl
+else
+  warn "systemctl not required on $(uname -s) for local/dev checks"
+fi
 
 NODE_MAJOR="$(node -v | sed 's/v//' | cut -d. -f1)"
 if [[ "$NODE_MAJOR" -lt 20 ]]; then
@@ -23,10 +28,12 @@ if [[ "$NODE_MAJOR" -lt 20 ]]; then
 fi
 ok "Node version $(node -v)"
 
-if systemctl list-unit-files | grep -q '^turtlebot.service'; then
-  ok "systemd unit turtlebot.service detected"
-else
-  warn "turtlebot.service not installed yet"
+if [[ "$(uname -s)" == "Linux" ]]; then
+  if systemctl list-unit-files | grep -q '^turtlebot.service'; then
+    ok "systemd unit turtlebot.service detected"
+  else
+    warn "turtlebot.service not installed yet"
+  fi
 fi
 
 ok "Preflight passed"
