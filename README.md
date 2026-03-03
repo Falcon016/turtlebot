@@ -1,4 +1,4 @@
-# turtlebot
+# TurtleBot
 
 ![Version](https://img.shields.io/badge/version-0.2.0-57c784)
 ![Runtime](https://img.shields.io/badge/runtime-Node%2020%2B-2f6b4f)
