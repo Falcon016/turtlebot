@@ -76,12 +76,23 @@ sudo bash scripts/uninstall.sh
 ```
 
 By default, TurtleBot uses local Ollama on `http://127.0.0.1:11434`.
+
 If you prefer OpenAI, set:
 
 ```env
 MODEL_PROVIDER=openai
 OPENAI_API_KEY=...
-MODEL=openai/gpt-4.1-mini
+MODEL=gpt-4.1
+THINK_MODEL=gpt-4.1
+```
+
+If you prefer Claude, set:
+
+```env
+MODEL_PROVIDER=anthropic
+ANTHROPIC_API_KEY=...
+MODEL=claude-sonnet-4-5
+THINK_MODEL=claude-opus-4-1
 ```
 
 ## Telegram mode
@@ -122,7 +133,7 @@ Included under `assets/branding/` for TUI and future docs:
 - `/help`
 - `/status`
 - `/model`
-- `/mode ollama|openai`
+- `/mode ollama|openai|anthropic`
 - `/pin <note>`
 - `/clear`
 
