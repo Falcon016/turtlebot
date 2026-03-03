@@ -23,8 +23,16 @@ npm run start
 
 ## Bootstrap (curl)
 
+Quick path:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap.sh | bash
+```
+
+Safer path (download + preview + confirm):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap-safe.sh | bash
 ```
 
 Optional env overrides:
