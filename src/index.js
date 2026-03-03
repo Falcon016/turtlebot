@@ -108,17 +108,19 @@ async function runCli() {
   rl.close();
 }
 
-function runTui() {
-  logger.info('Starting TUI mode');
+function runTui({ minimal = false } = {}) {
+  logger.info(`Starting TUI mode${minimal ? ' (minimal)' : ''}`);
   createTui({
     onSubmit: handleText,
     onCommand: (text) => handleCommand({ text, config, state, history }),
-    getStatus: statusText
+    getStatus: statusText,
+    minimal
   });
 }
 
-if (argv.includes('--tui') || argv.includes('tui')) {
-  runTui();
+if (argv.includes('--tui') || argv.includes('tui') || argv.includes('--tui-minimal')) {
+  const minimal = argv.includes('--minimal') || argv.includes('--tui-minimal') || process.env.TUI_MINIMAL === 'true';
+  runTui({ minimal });
 } else if (config.telegramBotToken) {
   runTelegram();
 } else {
