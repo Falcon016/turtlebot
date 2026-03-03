@@ -65,7 +65,9 @@ export async function runTurn({ config, history, userText, logger }) {
           ...args,
           cwd: config.workspaceDir,
           allowExec: config.allowExec,
-          allowlist: config.execAllowlist
+          policy: config.execPolicy,
+          allowlist: config.execAllowlist,
+          confirmToken: config.execConfirmToken
         });
       }
     } catch (e) {

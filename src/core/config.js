@@ -21,6 +21,10 @@ export function loadConfig() {
     logLevel: process.env.LOG_LEVEL || 'info',
     maxHistory: Number(process.env.MAX_HISTORY || 12),
     allowExec: (process.env.ALLOW_EXEC || 'true').toLowerCase() === 'true',
-    execAllowlist: allowlist
+    execPolicy: process.env.EXEC_POLICY || 'allowlist',
+    execAllowlist: allowlist,
+    execConfirmToken: process.env.EXEC_CONFIRM_TOKEN || '',
+    ollamaTimeoutMs: Number(process.env.OLLAMA_TIMEOUT_MS || 45000),
+    ollamaRetries: Number(process.env.OLLAMA_RETRIES || 1)
   };
 }
