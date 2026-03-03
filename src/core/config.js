@@ -12,6 +12,7 @@ export function loadConfig() {
   return {
     modelProvider: process.env.MODEL_PROVIDER || 'ollama',
     openAiApiKey: process.env.OPENAI_API_KEY || '',
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
     model: process.env.MODEL || 'qwen3:4b',
     thinkModel: process.env.THINK_MODEL || 'lfm2.5-thinking',
     ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434',

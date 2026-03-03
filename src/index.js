@@ -39,7 +39,9 @@ function activeConfig() {
 }
 
 function providerReady(cfg) {
-  return cfg.modelProvider !== 'openai' || Boolean(cfg.openAiApiKey);
+  if (cfg.modelProvider === 'openai') return Boolean(cfg.openAiApiKey);
+  if (cfg.modelProvider === 'anthropic') return Boolean(cfg.anthropicApiKey);
+  return true;
 }
 
 function statusText() {
@@ -58,7 +60,12 @@ async function handleText(text) {
 
   const cfg = activeConfig();
   if (!providerReady(cfg)) {
-    return 'OpenAI mode is active but OPENAI_API_KEY is missing. Use /mode ollama or update .env.';
+    if (cfg.modelProvider === 'openai') {
+      return 'OpenAI mode is active but OPENAI_API_KEY is missing. Use /mode ollama or update .env.';
+    }
+    if (cfg.modelProvider === 'anthropic') {
+      return 'Anthropic mode is active but ANTHROPIC_API_KEY is missing. Use /mode ollama or update .env.';
+    }
   }
 
   const reply = await runTurn({ config: cfg, history, userText: text, logger });
