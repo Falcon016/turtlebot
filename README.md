@@ -21,6 +21,19 @@ npm install
 npm run start
 ```
 
+## Bootstrap (curl)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap.sh | bash
+```
+
+Optional env overrides:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap.sh | \
+  INSTALL_DIR=$HOME/my-turtlebot BRANCH=main bash
+```
+
 ## Installer scripts
 
 ```bash
@@ -32,6 +45,9 @@ sudo bash scripts/install.sh
 
 # health checks
 bash scripts/doctor.sh
+
+# smoke test
+bash scripts/smoke-test.sh
 
 # remove service + app files
 sudo bash scripts/uninstall.sh
