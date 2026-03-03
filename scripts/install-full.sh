@@ -6,7 +6,7 @@ INSTALL_DIR="${INSTALL_DIR:-/opt/turtlebot-src}"
 BRANCH="${BRANCH:-main}"
 
 if [[ "${EUID}" -ne 0 ]]; then
-  echo "Run as root: sudo bash scripts/installer-full.sh"
+  echo "Run as root: sudo bash scripts/install-full.sh"
   exit 1
 fi
 

@@ -63,7 +63,7 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 
 ```bash
 # interactive env setup
-bash scripts/configure.sh
+bash scripts/setup-config.sh
 
 # preflight checks
 bash scripts/preflight.sh
@@ -75,13 +75,13 @@ sudo bash scripts/install.sh
 sudo bash scripts/update.sh
 
 # full installer (installs prerequisites + node + turtlebot service)
-sudo bash scripts/installer-full.sh
+sudo bash scripts/install-full.sh
 
 # health checks
 bash scripts/doctor.sh
 
-# smoke test
-bash scripts/smoke-test.sh
+# self-test
+bash scripts/self-test.sh
 
 # remove service + app files
 sudo bash scripts/uninstall.sh
@@ -120,7 +120,7 @@ THINK_MODEL=claude-opus-4-1
 - Deploy with:
 
 ```bash
-sudo bash scripts/deploy-pi.sh
+sudo bash scripts/install-pi.sh
 ```
 
 - Service file: `scripts/turtlebot.service`
