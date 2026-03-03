@@ -7,6 +7,10 @@
 
 A lightweight, Raspberry Pi–friendly assistant runtime inspired by OpenClaw, designed for terminal-first workflows.
 
+<p align="center">
+  <img src="assets/branding/turtlebot-mascot.svg" alt="TurtleBot mascot" width="180" />
+</p>
+
 ---
 
 ## Quick links
