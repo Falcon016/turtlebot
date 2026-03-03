@@ -21,6 +21,17 @@ npm install
 npm run start
 ```
 
+## Terminal UI (recommended)
+
+```bash
+npm run tui
+```
+
+TUI keybinds:
+- `Ctrl+C` quit
+- `Ctrl+K` clear chat pane
+- `/help` command list
+
 ## Bootstrap (curl)
 
 Quick path:

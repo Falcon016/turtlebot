@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "tui": "node src/index.js --tui",
     "dev": "node --watch src/index.js",
     "check": "node --check src/index.js"
   },
@@ -13,6 +14,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "blessed": "^0.1.81",
     "dotenv": "^16.6.1"
   }
 }
