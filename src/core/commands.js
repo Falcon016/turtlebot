@@ -35,10 +35,13 @@ export async function handleCommand({ text, config, state, history }) {
 
   if (trimmed.startsWith('/mode ')) {
     const mode = trimmed.slice(6).trim().toLowerCase();
-    if (!['ollama', 'openai'].includes(mode)) return 'Usage: /mode ollama|openai';
+    if (!['ollama', 'openai', 'anthropic'].includes(mode)) return 'Usage: /mode ollama|openai|anthropic';
     state.provider = mode;
     if (mode === 'openai' && !config.openAiApiKey) {
       return 'Switched to openai mode, but OPENAI_API_KEY is missing.';
+    }
+    if (mode === 'anthropic' && !config.anthropicApiKey) {
+      return 'Switched to anthropic mode, but ANTHROPIC_API_KEY is missing.';
     }
     return `Switched mode to ${mode}.`;
   }
