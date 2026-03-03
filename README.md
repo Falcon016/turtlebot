@@ -110,6 +110,13 @@ Configure in `.env`:
 - `EXEC_POLICY=confirm` (command must include `EXEC_CONFIRM_TOKEN`)
 - `EXEC_POLICY=off` (disable exec)
 
+## Branding assets
+
+Included under `assets/branding/` for TUI and future docs:
+- `turtlebot-mark.svg`
+- `turtlebot-mascot.svg`
+- `theme-tokens.json`
+
 ## Telegram/CLI commands
 
 - `/help`
