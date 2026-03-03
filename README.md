@@ -1,4 +1,4 @@
-# turtlebot (minimal scaffold)
+# turtlebot
 
 A tiny, Pi-friendly assistant runtime inspired by OpenClaw ideas.
 
@@ -150,8 +150,7 @@ Included under `assets/branding/` for TUI and future docs:
 - `/pin <note>`
 - `/clear`
 
-## Next steps
+## Roadmap
 
-- Add your turtle UI as optional web dashboard
-- Add role-based tool permissions
-- Add end-to-end tests + release workflow
+- `v0.2.x`: stability, provider ergonomics, richer TUI interactions
+- `v0.3.x`: plugin permissions profiles + advanced command palette
