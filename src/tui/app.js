@@ -198,7 +198,15 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
     input.focus();
   });
 
-  screen.key(['C-c'], () => process.exit(0));
+  const quit = () => {
+    try {
+      screen.destroy();
+    } catch {}
+    process.exit(0);
+  };
+
+  screen.key(['C-c'], quit);
+  process.on('SIGINT', quit);
   screen.key(['C-k'], () => {
     chat.setContent('');
     render();
