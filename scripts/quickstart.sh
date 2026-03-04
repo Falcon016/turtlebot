@@ -28,7 +28,29 @@ npm ci || npm install
 [[ -f .env ]] || cp .env.example .env
 
 echo
-bash scripts/setup-config.sh
+if [[ "${QUICKSTART_NONINTERACTIVE:-false}" == "true" ]]; then
+  echo "Non-interactive mode enabled (QUICKSTART_NONINTERACTIVE=true)."
+  if [[ ! -f .env ]]; then
+    cp .env.example .env
+  fi
+  if [[ -n "${MODEL_PROVIDER:-}" ]]; then
+    perl -0777 -i -pe "s/^MODEL_PROVIDER=.*/MODEL_PROVIDER=${MODEL_PROVIDER}/m" .env
+  fi
+  if [[ -n "${OLLAMA_BASE_URL:-}" ]]; then
+    perl -0777 -i -pe "s#^OLLAMA_BASE_URL=.*#OLLAMA_BASE_URL=${OLLAMA_BASE_URL}#m" .env
+  fi
+  if [[ -n "${OPENAI_API_KEY:-}" ]]; then
+    perl -0777 -i -pe "s#^OPENAI_API_KEY=.*#OPENAI_API_KEY=${OPENAI_API_KEY}#m" .env
+  fi
+  if [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
+    perl -0777 -i -pe "s#^ANTHROPIC_API_KEY=.*#ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}#m" .env
+  fi
+  if [[ -n "${TELEGRAM_BOT_TOKEN:-}" ]]; then
+    perl -0777 -i -pe "s#^TELEGRAM_BOT_TOKEN=.*#TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}#m" .env
+  fi
+else
+  bash scripts/setup-config.sh
+fi
 
 echo
 if [[ "${QUICKSTART_NO_SERVICE:-false}" == "true" ]]; then

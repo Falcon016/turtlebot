@@ -73,6 +73,13 @@ Optional (skip service install):
 curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/quickstart.sh | QUICKSTART_NO_SERVICE=true bash
 ```
 
+Optional (non-interactive, NOT default):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/quickstart.sh | \
+  QUICKSTART_NONINTERACTIVE=true MODEL_PROVIDER=ollama QUICKSTART_NO_SERVICE=true bash
+```
+
 ## Bootstrap (curl)
 
 Quick path:
