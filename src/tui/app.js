@@ -177,7 +177,14 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
       if (text.startsWith('/')) {
         const cmd = await onCommand(text);
         stopSpinner(Date.now() - started);
-        say('bot', cmd);
+
+        if (text.trim() === '/clear') {
+          chat.setContent('');
+          render();
+          say('bot', 'Chat cleared.');
+        } else {
+          say('bot', cmd);
+        }
       } else {
         const reply = await onSubmit(text);
         stopSpinner(Date.now() - started);
