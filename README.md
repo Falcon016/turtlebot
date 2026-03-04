@@ -55,6 +55,24 @@ TUI keybinds:
 
 ---
 
+## One-command quickstart (recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/quickstart.sh | bash
+```
+
+This will:
+- clone/update TurtleBot
+- install dependencies
+- run interactive setup
+- install/start service automation (macOS launchd or Linux systemd)
+
+Optional (skip service install):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/quickstart.sh | QUICKSTART_NO_SERVICE=true bash
+```
+
 ## Bootstrap (curl)
 
 Quick path:
@@ -84,7 +102,7 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 
 | Goal | Command |
 |---|---|
-| Fast bootstrap (safe) | `curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap-safe.sh \| bash` |
+| One-command quickstart | `curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/quickstart.sh \| bash` |
 | Configure `.env` interactively | `bash scripts/setup-config.sh` |
 | Install LaunchAgent service | `bash scripts/install-macos.sh` |
 | Update + restart service | `bash scripts/update-macos.sh` |
