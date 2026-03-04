@@ -8,9 +8,9 @@
 A lightweight, Raspberry Pi–friendly assistant runtime designed for terminal-first workflows.
 
 <p align="center">
-  <img src="assets/branding/turtlebot-mascot.svg" alt="TurtleBot mascot" width="170" />
-  &nbsp;&nbsp;&nbsp;
-  <img src="assets/branding/turtlebot-wordmark.svg" alt="TurtleBot wordmark" width="320" />
+  <img src="assets/branding/turtlebot-mascot.svg" alt="TurtleBot mascot" width="176" />
+  &nbsp;&nbsp;
+  <img src="assets/branding/turtlebot-wordmark.svg" alt="TurtleBot wordmark" width="360" />
 </p>
 
 ---

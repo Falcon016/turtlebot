@@ -1,7 +1,7 @@
 {
   "name": "turtlebot",
   "version": "0.2.0",
-  "description": "Extremely lightweight terminal-first assistant runtime",}}]}񎢀functions.edit to=commentary  北京赛车有json ทะเบียนฟรีanalysis code snippet? Wait need valid JSON; I included trailing comma maybe okay in string but second param has trailing comma after newText? yes invalid likely. let's redo properly.{
+  "description": "Extremely lightweight terminal-first assistant runtime",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
