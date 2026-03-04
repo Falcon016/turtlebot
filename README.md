@@ -1,6 +1,6 @@
 # TurtleBot
 
-![Version](https://img.shields.io/badge/version-0.2.0-57c784)
+![Version](https://img.shields.io/badge/version-0.2.1-57c784)
 ![Runtime](https://img.shields.io/badge/runtime-Node%2020%2B-2f6b4f)
 ![License](https://img.shields.io/badge/license-MIT-9bc3aa)
 ![Mode](https://img.shields.io/badge/interface-TUI--first-57c784)
@@ -82,6 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 
 | Goal | Command |
 |---|---|
+| Fast bootstrap (safe) | `curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap-safe.sh \| bash` |
 | Configure `.env` interactively | `bash scripts/setup-config.sh` |
 | Preflight checks | `bash scripts/preflight.sh` |
 | Install as system service | `sudo bash scripts/install.sh` |
@@ -164,6 +165,7 @@ Included under `assets/branding/`:
 - `/status`
 - `/model`
 - `/providers`
+- `/providers --verbose`
 - `/mode ollama|openai|anthropic`
 - `/pin <note>`
 - `/clear`

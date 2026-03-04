@@ -1,6 +1,6 @@
 {
   "name": "turtlebot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Extremely lightweight terminal-first assistant runtime",
   "type": "module",
   "main": "src/index.js",

@@ -48,20 +48,33 @@ async function pingAnthropic(apiKey, timeoutMs = 5000) {
   }
 }
 
-export async function providersStatus(config, state) {
-  const [ollamaOk, openAiOk, anthropicOk] = await Promise.all([
-    pingOllama(config.ollamaBaseUrl, 5000),
-    pingOpenAI(config.openAiApiKey, 5000),
-    pingAnthropic(config.anthropicApiKey, 5000)
+async function timed(label, fn) {
+  const started = Date.now();
+  const ok = await fn();
+  return { label, ok, latencyMs: Date.now() - started };
+}
+
+export async function providersStatus(config, state, { verbose = false } = {}) {
+  const [ollama, openai, anthropic] = await Promise.all([
+    timed('ollama', () => pingOllama(config.ollamaBaseUrl, 5000)),
+    timed('openai', () => pingOpenAI(config.openAiApiKey, 5000)),
+    timed('anthropic', () => pingAnthropic(config.anthropicApiKey, 5000))
   ]);
 
   const mark = (ok) => (ok ? '✓' : '✗');
   const current = state.provider;
 
+  const line = (p, configured) => {
+    const active = current === p.label ? '→' : ' ';
+    const base = `${active} ${p.label.padEnd(9)} ${mark(p.ok)}  configured=${configured}`;
+    if (!verbose) return base;
+    return `${base}  latency=${p.latencyMs}ms`;
+  };
+
   return [
-    `provider status:`,
-    `${current === 'ollama' ? '→' : ' '} ollama    ${mark(ollamaOk)}  configured=${Boolean(config.ollamaBaseUrl)}`,
-    `${current === 'openai' ? '→' : ' '} openai    ${mark(openAiOk)}  configured=${Boolean(config.openAiApiKey)}`,
-    `${current === 'anthropic' ? '→' : ' '} anthropic ${mark(anthropicOk)}  configured=${Boolean(config.anthropicApiKey)}`
+    `provider status${verbose ? ' (verbose)' : ''}:`,
+    line(ollama, Boolean(config.ollamaBaseUrl)),
+    line(openai, Boolean(config.openAiApiKey)),
+    line(anthropic, Boolean(config.anthropicApiKey))
   ].join('\n');
 }

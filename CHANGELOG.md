@@ -1,5 +1,11 @@
 # Release Notes
 
+## v0.2.1
+
+- Added `/providers --verbose` with provider latency visibility
+- Improved install-path quick chooser in README
+- Refined README header branding and wordmark presentation
+
 ## v0.2.0
 
 - Polished terminal-first TUI with regular + minimal modes
