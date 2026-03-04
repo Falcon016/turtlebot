@@ -80,9 +80,21 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 
 ## Install path chooser
 
+### macOS (launchd)
+
 | Goal | Command |
 |---|---|
 | Fast bootstrap (safe) | `curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bootstrap-safe.sh \| bash` |
+| Configure `.env` interactively | `bash scripts/setup-config.sh` |
+| Install LaunchAgent service | `bash scripts/install-macos.sh` |
+| Update + restart service | `bash scripts/update-macos.sh` |
+| Service diagnostics | `bash scripts/doctor-macos.sh` |
+| Uninstall LaunchAgent service | `bash scripts/uninstall-macos.sh` |
+
+### Linux / Raspberry Pi (systemd)
+
+| Goal | Command |
+|---|---|
 | Configure `.env` interactively | `bash scripts/setup-config.sh` |
 | Preflight checks | `bash scripts/preflight.sh` |
 | Install as system service | `sudo bash scripts/install.sh` |
@@ -136,6 +148,19 @@ THINK_MODEL=claude-opus-4-1
 
 ```bash
 sudo bash scripts/install-pi.sh
+```
+
+## macOS service notes
+
+- Uses `launchd` via `~/Library/LaunchAgents/com.falcon016.turtlebot.plist`
+- Logs are written to `workspace/logs/`
+- Manage with:
+
+```bash
+bash scripts/install-macos.sh
+bash scripts/update-macos.sh
+bash scripts/doctor-macos.sh
+bash scripts/uninstall-macos.sh
 ```
 
 ---
