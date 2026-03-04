@@ -15,7 +15,8 @@ export async function handleCommand({ text, config, state, history }) {
       '/providers --verbose',
       '/mode ollama|openai|anthropic',
       '/pin <note>',
-      '/clear'
+      '/clear',
+      '/quit'
     ].join('\n');
   }
 
@@ -42,6 +43,10 @@ export async function handleCommand({ text, config, state, history }) {
   if (trimmed === '/clear') {
     history.length = 0;
     return 'History cleared.';
+  }
+
+  if (trimmed === '/quit' || trimmed === '/exit') {
+    return 'QUIT';
   }
 
   if (trimmed.startsWith('/mode ')) {

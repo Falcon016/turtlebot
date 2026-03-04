@@ -169,6 +169,11 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
     screen.render();
     if (!text) return;
 
+    if (text === '/quit' || text === '/exit') {
+      quit();
+      return;
+    }
+
     say('you', text);
 
     const started = Date.now();
@@ -182,6 +187,9 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
           chat.setContent('');
           render();
           say('bot', 'Chat cleared.');
+        } else if (cmd === 'QUIT') {
+          quit();
+          return;
         } else {
           say('bot', cmd);
         }

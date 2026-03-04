@@ -219,6 +219,7 @@ Included under `assets/branding/`:
 - `/mode ollama|openai|anthropic`
 - `/pin <note>`
 - `/clear`
+- `/quit` (or `/exit`)
 
 ---
 
