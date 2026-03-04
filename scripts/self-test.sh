@@ -28,14 +28,18 @@ else
   warn "Ollama not reachable (okay if using OpenAI mode)"
 fi
 
-if systemctl list-unit-files 2>/dev/null | grep -q '^turtlebot.service'; then
-  if systemctl is-active --quiet turtlebot.service; then
-    pass "TurtleBot service active (turtlebot.service)"
+if [[ "$(uname -s)" == "Linux" ]]; then
+  if systemctl list-unit-files 2>/dev/null | grep -q '^turtlebot.service'; then
+    if systemctl is-active --quiet turtlebot.service; then
+      pass "TurtleBot service active (turtlebot.service)"
+    else
+      warn "TurtleBot service installed but not active (turtlebot.service)"
+    fi
   else
-    warn "TurtleBot service installed but not active (turtlebot.service)"
+    warn "TurtleBot service not installed (turtlebot.service)"
   fi
 else
-  warn "TurtleBot service not installed (turtlebot.service)"
+  echo "[INFO] systemd service check skipped on $(uname -s)"
 fi
 
 echo "Smoke test complete."
