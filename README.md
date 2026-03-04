@@ -123,7 +123,7 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 | Configure `.env` interactively | `bash scripts/setup-config.sh` |
 | Preflight checks | `bash scripts/preflight.sh` |
 | Install as system service | `sudo bash scripts/install.sh` |
-| Update existing install (rollback on failure) | `sudo bash scripts/update.sh` |
+| Update existing install (rollback on failure) | `sudo bash scripts/update.sh` (run from your latest repo checkout) |
 | Full installer (deps + node + service) | `sudo bash scripts/install-full.sh` |
 | Health check | `bash scripts/doctor.sh` |
 | Self-test | `bash scripts/self-test.sh` |
