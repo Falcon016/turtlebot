@@ -1,0 +1,14 @@
+[Unit]
+Description=TurtleBot Minimal Runtime
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/turtlebot
+ExecStart=/usr/bin/node /opt/turtlebot/src/index.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

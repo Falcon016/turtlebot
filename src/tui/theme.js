@@ -1,0 +1,9 @@
+export const turtleTheme = {
+  bg: '#0f1412',
+  panel: '#15201b',
+  border: '#2f6b4f',
+  accent: '#57c784',
+  text: '#d8f3df',
+  muted: '#9bc3aa',
+  warn: '#f4c95d'
+};
