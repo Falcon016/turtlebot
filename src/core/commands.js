@@ -12,6 +12,7 @@ export async function handleCommand({ text, config, state, history }) {
       '/status',
       '/model',
       '/providers',
+      '/providers --verbose',
       '/mode ollama|openai|anthropic',
       '/pin <note>',
       '/clear'
@@ -31,7 +32,11 @@ export async function handleCommand({ text, config, state, history }) {
   if (trimmed === '/model') return `model=${state.model}\nthinkModel=${state.thinkModel}`;
 
   if (trimmed === '/providers') {
-    return providersStatus(config, state);
+    return providersStatus(config, state, { verbose: false });
+  }
+
+  if (trimmed === '/providers --verbose') {
+    return providersStatus(config, state, { verbose: true });
   }
 
   if (trimmed === '/clear') {
