@@ -99,13 +99,22 @@ async function runTelegram() {
 async function runCli() {
   logger.info('Starting CLI mode');
   const rl = readline.createInterface({ input, output });
-  while (true) {
-    const text = await rl.question('you> ');
-    if (text.trim().toLowerCase() === 'exit') break;
-    const reply = await handleText(text);
-    console.log(`turtle> ${reply}`);
+  try {
+    while (true) {
+      let text;
+      try {
+        text = await rl.question('you> ');
+      } catch {
+        // stdin closed / EOF
+        break;
+      }
+      if (text.trim().toLowerCase() === 'exit') break;
+      const reply = await handleText(text);
+      console.log(`turtle> ${reply}`);
+    }
+  } finally {
+    rl.close();
   }
-  rl.close();
 }
 
 function runTui({ minimal = false } = {}) {
