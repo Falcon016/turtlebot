@@ -1,3 +1,5 @@
+import { spawn } from 'node:child_process';
+
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
@@ -129,6 +131,70 @@ async function ollamaChat({ baseUrl, model, messages, timeoutMs, retries = 1 }) 
   throw new Error(`Ollama request failed after retries: ${lastErr?.message || 'unknown error'}`);
 }
 
+function stripTerminalNoise(s = '') {
+  return s
+    .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .replace(/\[\?\d+[hl]/g, '')
+    .trim();
+}
+
+function toPrompt(messages) {
+  const system = messages.find((m) => m.role === 'system')?.content || 'You are TurtleBot: concise, safe, practical.';
+  const lastUser = [...messages].reverse().find((m) => m.role === 'user')?.content || '';
+  return `${system}\n\nUser: ${lastUser}\nAssistant:`;
+}
+
+async function ollamaCliChat({ model, messages, timeoutMs = 0 }) {
+  const effectiveTimeoutMs = Number(timeoutMs) > 0 ? Math.max(timeoutMs, 180000) : 0;
+  return new Promise((resolve, reject) => {
+    const prompt = toPrompt(messages);
+    const child = spawn('ollama', ['run', model, prompt], { shell: false });
+
+    let stdout = '';
+    let stderr = '';
+    let timer = null;
+    if (effectiveTimeoutMs > 0) {
+      timer = setTimeout(() => {
+        child.kill('SIGTERM');
+        setTimeout(() => child.kill('SIGKILL'), 1500);
+        reject(new Error('Ollama CLI timed out'));
+      }, effectiveTimeoutMs);
+    }
+
+    child.stdout.on('data', (d) => {
+      stdout += d.toString();
+    });
+    child.stderr.on('data', (d) => {
+      stderr += d.toString();
+    });
+
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      reject(err);
+    });
+
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code !== 0) {
+        reject(new Error(stripTerminalNoise(stderr || `Ollama CLI exited with code ${code}`)));
+        return;
+      }
+      const cleaned = stripTerminalNoise(stdout || stderr);
+      resolve({
+        choices: [
+          {
+            message: {
+              role: 'assistant',
+              content: cleaned || '(empty response)'
+            }
+          }
+        ]
+      });
+    });
+  });
+}
+
 export async function chatCompletion({ config, messages, tools = [] }) {
   const lastUser = [...messages].reverse().find((m) => m.role === 'user')?.content || '';
   const pickedModel = isThinkPrompt(lastUser) ? config.thinkModel : config.model;
@@ -148,6 +214,14 @@ export async function chatCompletion({ config, messages, tools = [] }) {
       model: pickedModel,
       messages,
       timeoutMs: config.ollamaTimeoutMs
+    });
+  }
+
+  if (config.modelProvider === 'ollama-cli') {
+    return ollamaCliChat({
+      model: pickedModel,
+      messages,
+      timeoutMs: 0
     });
   }
 

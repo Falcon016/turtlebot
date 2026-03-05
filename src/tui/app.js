@@ -64,7 +64,7 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
       '  𓆉  shell mode\n' +
       '  🐢  chat mode\n\n' +
       '{#57c784-fg}{bold}shortcuts{/bold}{/}\n' +
-      ' • /help\n • /status\n • /model\n • /providers\n • /mode ollama|openai|anthropic\n • /pin <note>\n • /clear'
+      ' • /help\n • /status\n • /model\n • /providers\n • /mode ollama|ollama-cli|openai|anthropic\n • /pin <note>\n • /clear\n • /quit'
   });
 
   const chat = blessed.log({
@@ -163,7 +163,7 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
     render();
   }
 
-  input.on('submit', async (value) => {
+  input.on('submit', (value) => {
     const text = (value || '').trim();
     input.clearValue();
     screen.render();
@@ -174,36 +174,45 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
       return;
     }
 
+    if (pending) {
+      say('bot', '{#f4c95d-fg}Request in progress...{/} use /quit to abort UI.');
+      input.focus();
+      return;
+    }
+
     say('you', text);
 
     const started = Date.now();
     startSpinner();
-    try {
-      if (text.startsWith('/')) {
-        const cmd = await onCommand(text);
-        stopSpinner(Date.now() - started);
 
-        if (text.trim() === '/clear') {
-          chat.setContent('');
-          render();
-          say('bot', 'Chat cleared.');
-        } else if (cmd === 'QUIT') {
-          quit();
-          return;
+    (async () => {
+      try {
+        if (text.startsWith('/')) {
+          const cmd = await onCommand(text);
+          stopSpinner(Date.now() - started);
+
+          if (text.trim() === '/clear') {
+            chat.setContent('');
+            render();
+            say('bot', 'Chat cleared.');
+          } else if (cmd === 'QUIT') {
+            quit();
+            return;
+          } else {
+            say('bot', cmd);
+          }
         } else {
-          say('bot', cmd);
+          const reply = await onSubmit(text);
+          stopSpinner(Date.now() - started);
+          say('bot', reply);
         }
-      } else {
-        const reply = await onSubmit(text);
+      } catch (e) {
         stopSpinner(Date.now() - started);
-        say('bot', reply);
+        say('bot', `{red-fg}error:{/red-fg} ${e.message}`);
       }
-    } catch (e) {
-      stopSpinner(Date.now() - started);
-      say('bot', `{red-fg}error:{/red-fg} ${e.message}`);
-    }
 
-    input.focus();
+      input.focus();
+    })();
   });
 
   const quit = () => {

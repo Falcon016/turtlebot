@@ -133,7 +133,15 @@ curl -fsSL https://raw.githubusercontent.com/Falcon016/turtlebot/main/scripts/bo
 
 ## Model providers
 
-Default provider is local Ollama (`http://127.0.0.1:11434`).
+Default provider is local Ollama API (`http://127.0.0.1:11434`).
+
+If you want local Ollama **without HTTP API**, use CLI mode:
+
+```env
+MODEL_PROVIDER=ollama-cli
+MODEL=qwen3:4b
+THINK_MODEL=qwen3:4b
+```
 
 ### OpenAI
 
@@ -216,7 +224,7 @@ Included under `assets/branding/`:
 - `/model`
 - `/providers`
 - `/providers --verbose`
-- `/mode ollama|openai|anthropic`
+- `/mode ollama|ollama-cli|openai|anthropic`
 - `/pin <note>`
 - `/clear`
 - `/quit` (or `/exit`)

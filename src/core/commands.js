@@ -13,7 +13,7 @@ export async function handleCommand({ text, config, state, history }) {
       '/model',
       '/providers',
       '/providers --verbose',
-      '/mode ollama|openai|anthropic',
+      '/mode ollama|ollama-cli|openai|anthropic',
       '/pin <note>',
       '/clear',
       '/quit'
@@ -51,7 +51,7 @@ export async function handleCommand({ text, config, state, history }) {
 
   if (trimmed.startsWith('/mode ')) {
     const mode = trimmed.slice(6).trim().toLowerCase();
-    if (!['ollama', 'openai', 'anthropic'].includes(mode)) return 'Usage: /mode ollama|openai|anthropic';
+    if (!['ollama', 'ollama-cli', 'openai', 'anthropic'].includes(mode)) return 'Usage: /mode ollama|ollama-cli|openai|anthropic';
     state.provider = mode;
     if (mode === 'openai' && !config.openAiApiKey) {
       return 'Switched to openai mode, but OPENAI_API_KEY is missing.';
