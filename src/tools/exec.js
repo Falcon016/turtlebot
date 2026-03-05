@@ -14,9 +14,10 @@ function isBlocked(command) {
   return BLOCK_PATTERNS.some((re) => re.test(command));
 }
 
-function isAllowlisted(command, allowlist) {
-  if (!allowlist?.length) return false;
-  return allowlist.some((prefix) => command.trim().startsWith(prefix));
+function getAllowlistedExact(command, allowlist) {
+  if (!allowlist?.length) return null;
+  const normalized = command.trim();
+  return allowlist.find((item) => item.trim() === normalized) || null;
 }
 
 function tokenize(command) {
@@ -87,17 +88,23 @@ export async function execTool({
     throw new Error('Blocked potentially dangerous command');
   }
 
-  if (policy === 'allowlist' && !isAllowlisted(command, allowlist)) {
-    throw new Error('Command not in EXEC_ALLOWLIST');
-  }
+  let commandToRun = command;
 
-  if (policy === 'allowlist' && !allowlist?.length) {
-    throw new Error('EXEC_ALLOWLIST is empty while EXEC_POLICY=allowlist');
+  if (policy === 'allowlist') {
+    if (!allowlist?.length) {
+      throw new Error('EXEC_ALLOWLIST is empty while EXEC_POLICY=allowlist');
+    }
+
+    const exact = getAllowlistedExact(command, allowlist);
+    if (!exact) {
+      throw new Error('Command must exactly match an entry in EXEC_ALLOWLIST');
+    }
+    commandToRun = exact;
   }
 
   if (policy === 'confirm' && !hasConfirmToken(command, confirmToken)) {
     throw new Error('Command missing EXEC_CONFIRM_TOKEN');
   }
 
-  return runCommand({ command, cwd, timeoutMs: 20000 });
+  return runCommand({ command: commandToRun, cwd, timeoutMs: 20000 });
 }

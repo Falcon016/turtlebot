@@ -194,7 +194,7 @@ bash scripts/uninstall-macos.sh
 
 Configure in `.env`:
 
-- `EXEC_POLICY=allowlist` (recommended)
+- `EXEC_POLICY=allowlist` (recommended; command must exactly match an `EXEC_ALLOWLIST` entry)
 - `EXEC_POLICY=confirm` (command must include `EXEC_CONFIRM_TOKEN`)
 - `EXEC_POLICY=off` (disable exec)
 
