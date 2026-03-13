@@ -25,6 +25,11 @@ function tokenize(command) {
   return parts.map((p) => p.replace(/^['"]|['"]$/g, ''));
 }
 
+function isSafeBinaryName(bin) {
+  // Restrict the executable name to a conservative set of characters and disallow path separators.
+  return /^[A-Za-z0-9._-]+$/.test(bin);
+}
+
 function runCommand({ command, cwd, timeoutMs = 20000 }) {
   return new Promise((resolve, reject) => {
     const tokens = tokenize(command);
@@ -34,6 +39,11 @@ function runCommand({ command, cwd, timeoutMs = 20000 }) {
     }
 
     const [bin, ...args] = tokens;
+    if (!isSafeBinaryName(bin)) {
+      reject(new Error('Unsafe executable name in command'));
+      return;
+    }
+
     const child = spawn(bin, args, { cwd, shell: false });
 
     let stdout = '';
