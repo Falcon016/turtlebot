@@ -8,9 +8,7 @@
 A lightweight, Raspberry Pi–friendly assistant runtime designed for terminal-first workflows.
 
 <p align="center">
-  <img src="assets/branding/turtlebot-mascot.svg" alt="TurtleBot mascot" width="176" />
-  &nbsp;&nbsp;
-  <img src="assets/branding/turtlebot-wordmark.svg" alt="TurtleBot wordmark" width="360" />
+  <img src="assets/branding/turtlebot-logo.jpg" alt="TurtleBot logo" width="720" />
 </p>
 
 ---
@@ -211,8 +209,17 @@ Configure in `.env`:
 ## Branding assets
 
 Included under `assets/branding/`:
+- `turtlebot-logo.jpg`
+- `turtlebot-icon.png`
+- `turtlebot-icon-1024.png`
+- `turtlebot-icon-512.png`
+- `turtlebot-icon-256.png`
+- `turtlebot-icon-128.png`
+- `turtlebot-icon-64.png`
+- `turtlebot-icon-32.png`
 - `turtlebot-mark.svg`
 - `turtlebot-mascot.svg`
+- `turtlebot-wordmark.svg`
 - `theme-tokens.json`
 
 ---
