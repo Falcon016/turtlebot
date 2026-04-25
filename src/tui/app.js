@@ -138,7 +138,11 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
 
   function render() {
     renderOverview();
-    screen.render();
+    try {
+      screen.render();
+    } catch {
+      // screen.render() throws on resize race; ignore
+    }
   }
 
   function say(role, text) {
