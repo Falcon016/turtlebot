@@ -13,7 +13,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_M
 
 /**
  * Long-poll Telegram for new updates.
- * Returns an empty array on network error so the caller can continue the loop.
+ * Throws on network/API errors so the caller can log and apply backoff.
  */
 export async function getUpdates(token, offset) {
   const url = `${BASE}/bot${token}/getUpdates?timeout=20${offset ? `&offset=${offset}` : ''}`;
