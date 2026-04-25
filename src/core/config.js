@@ -26,6 +26,7 @@ export function loadConfig() {
     execAllowlist: allowlist,
     execConfirmToken: process.env.EXEC_CONFIRM_TOKEN || '',
     ollamaTimeoutMs: Number(process.env.OLLAMA_TIMEOUT_MS || 45000),
-    ollamaRetries: Number(process.env.OLLAMA_RETRIES || 1)
+    ollamaRetries: Number(process.env.OLLAMA_RETRIES || 1),
+    execTimeoutMs: Number(process.env.EXEC_TIMEOUT_MS || 20000)
   };
 }

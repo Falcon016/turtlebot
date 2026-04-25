@@ -67,7 +67,8 @@ export async function runTurn({ config, history, userText, logger }) {
           allowExec: config.allowExec,
           policy: config.execPolicy,
           allowlist: config.execAllowlist,
-          confirmToken: config.execConfirmToken
+          confirmToken: config.execConfirmToken,
+          timeoutMs: config.execTimeoutMs
         });
       }
     } catch (e) {
