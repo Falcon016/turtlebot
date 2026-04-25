@@ -15,15 +15,73 @@ async function fetchWithTimeout(url, options, timeoutMs = 45000) {
   }
 }
 
-async function openAiChat({ apiKey, model, messages, tools = [] }) {
-  const res = await fetch(OPENAI_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`
+/**
+ * Convert the shared OpenAI-style tool definitions to Anthropic's tool format.
+ * Anthropic uses { name, description, input_schema } instead of
+ * { type, function: { name, description, parameters } }.
+ */
+function toAnthropicTools(tools = []) {
+  return tools
+    .filter((t) => t.type === 'function' && t.function)
+    .map((t) => ({
+      name: t.function.name,
+      description: t.function.description || '',
+      input_schema: t.function.parameters || { type: 'object', properties: {} }
+    }));
+}
+
+/**
+ * Normalise an Anthropic response into the OpenAI-style shape the rest of the
+ * codebase expects: { choices: [{ message: { role, content, tool_calls? } }] }
+ */
+function normaliseAnthropicResponse(data) {
+  const textBlocks = (data.content || []).filter((b) => b.type === 'text');
+  const toolBlocks = (data.content || []).filter((b) => b.type === 'tool_use');
+
+  const content = textBlocks.map((b) => b.text).join('\n').trim() || null;
+
+  const tool_calls = toolBlocks.length
+    ? toolBlocks.map((b) => ({
+        id: b.id,
+        type: 'function',
+        function: {
+          name: b.name,
+          // Anthropic returns a parsed object; serialise back to string to
+          // match what agent.js expects (it calls JSON.parse on this field).
+          arguments: JSON.stringify(b.input ?? {})
+        }
+      }))
+    : undefined;
+
+  return {
+    choices: [
+      {
+        message: {
+          role: 'assistant',
+          content,
+          ...(tool_calls ? { tool_calls } : {})
+        }
+      }
+    ]
+  };
+}
+
+async function openAiChat({ apiKey, model, messages, tools = [], timeoutMs = 45000 }) {
+  const body = { model, messages, temperature: 0.2 };
+  if (tools.length) body.tools = tools;
+
+  const res = await fetchWithTimeout(
+    OPENAI_API_URL,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(body)
     },
-    body: JSON.stringify({ model, messages, tools, temperature: 0.2 })
-  });
+    timeoutMs
+  );
 
   if (!res.ok) {
     const text = await res.text();
@@ -32,11 +90,22 @@ async function openAiChat({ apiKey, model, messages, tools = [] }) {
   return res.json();
 }
 
-async function anthropicChat({ apiKey, model, messages, timeoutMs }) {
+async function anthropicChat({ apiKey, model, messages, tools = [], timeoutMs }) {
   const system = messages.find((m) => m.role === 'system')?.content || 'You are TurtleBot: concise, safe, practical.';
   const anthropicMessages = messages
     .filter((m) => ['user', 'assistant'].includes(m.role))
     .map((m) => ({ role: m.role, content: m.content }));
+
+  const anthropicTools = toAnthropicTools(tools);
+
+  const body = {
+    model,
+    max_tokens: 900,
+    temperature: 0.2,
+    system,
+    messages: anthropicMessages
+  };
+  if (anthropicTools.length) body.tools = anthropicTools;
 
   const res = await fetchWithTimeout(
     ANTHROPIC_API_URL,
@@ -47,13 +116,7 @@ async function anthropicChat({ apiKey, model, messages, timeoutMs }) {
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
       },
-      body: JSON.stringify({
-        model,
-        max_tokens: 900,
-        temperature: 0.2,
-        system,
-        messages: anthropicMessages
-      })
+      body: JSON.stringify(body)
     },
     timeoutMs
   );
@@ -64,22 +127,7 @@ async function anthropicChat({ apiKey, model, messages, timeoutMs }) {
   }
 
   const data = await res.json();
-  const textOut = (data.content || [])
-    .filter((b) => b.type === 'text')
-    .map((b) => b.text)
-    .join('\n')
-    .trim();
-
-  return {
-    choices: [
-      {
-        message: {
-          role: 'assistant',
-          content: textOut
-        }
-      }
-    ]
-  };
+  return normaliseAnthropicResponse(data);
 }
 
 async function ollamaHealth(baseUrl, timeoutMs) {
@@ -138,7 +186,8 @@ export async function chatCompletion({ config, messages, tools = [] }) {
       apiKey: config.openAiApiKey,
       model: pickedModel,
       messages,
-      tools
+      tools,
+      timeoutMs: config.ollamaTimeoutMs
     });
   }
 
@@ -147,6 +196,7 @@ export async function chatCompletion({ config, messages, tools = [] }) {
       apiKey: config.anthropicApiKey,
       model: pickedModel,
       messages,
+      tools,
       timeoutMs: config.ollamaTimeoutMs
     });
   }
