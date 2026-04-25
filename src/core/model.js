@@ -16,6 +16,48 @@ async function fetchWithTimeout(url, options, timeoutMs = 45000) {
 }
 
 /**
+ * Convert OpenAI-format history messages to Anthropic format before sending.
+ * Handles tool results (role:'tool') and assistant tool_calls arrays.
+ */
+export function toAnthropicMessages(messages) {
+  const result = [];
+  for (const msg of messages) {
+    if (msg.role === 'tool') {
+      // Convert OpenAI tool result → Anthropic tool_result block
+      // Must be attached to a user message
+      const last = result[result.length - 1];
+      const toolResultBlock = {
+        type: 'tool_result',
+        tool_use_id: msg.tool_call_id,
+        content: msg.content ?? '',
+        ...(msg.is_error ? { is_error: true } : {}),
+      };
+      if (last && last.role === 'user' && Array.isArray(last.content)) {
+        last.content.push(toolResultBlock);
+      } else {
+        result.push({ role: 'user', content: [toolResultBlock] });
+      }
+    } else if (msg.role === 'assistant' && msg.tool_calls?.length) {
+      // Convert OpenAI tool_calls → Anthropic tool_use blocks
+      const content = [];
+      if (msg.content) content.push({ type: 'text', text: msg.content });
+      for (const tc of msg.tool_calls) {
+        content.push({
+          type: 'tool_use',
+          id: tc.id,
+          name: tc.function.name,
+          input: (() => { try { return JSON.parse(tc.function.arguments); } catch { return {}; } })(),
+        });
+      }
+      result.push({ role: 'assistant', content });
+    } else {
+      result.push({ role: msg.role, content: msg.content });
+    }
+  }
+  return result;
+}
+
+/**
  * Convert the shared OpenAI-style tool definitions to Anthropic's tool format.
  * Anthropic uses { name, description, input_schema } instead of
  * { type, function: { name, description, parameters } }.
@@ -38,7 +80,9 @@ function normaliseAnthropicResponse(data) {
   const textBlocks = (data.content || []).filter((b) => b.type === 'text');
   const toolBlocks = (data.content || []).filter((b) => b.type === 'tool_use');
 
-  const content = textBlocks.map((b) => b.text).join('\n').trim() || null;
+  const textContent = textBlocks.map((b) => b.text).join('\n').trim();
+  // content is null only when BOTH text and tool blocks are absent
+  const content = textContent !== '' ? textContent : null;
 
   const tool_calls = toolBlocks.length
     ? toolBlocks.map((b) => ({
@@ -92,9 +136,7 @@ async function openAiChat({ apiKey, model, messages, tools = [], timeoutMs = 450
 
 async function anthropicChat({ apiKey, model, messages, tools = [], timeoutMs }) {
   const system = messages.find((m) => m.role === 'system')?.content || 'You are TurtleBot: concise, safe, practical.';
-  const anthropicMessages = messages
-    .filter((m) => ['user', 'assistant'].includes(m.role))
-    .map((m) => ({ role: m.role, content: m.content }));
+  const anthropicMessages = toAnthropicMessages(messages.filter((m) => m.role !== 'system'));
 
   const anthropicTools = toAnthropicTools(tools);
 
