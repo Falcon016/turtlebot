@@ -201,13 +201,17 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
   render();
   say('bot', minimal ? 'Minimal TUI ready. Type /help for commands.' : 'TUI ready. Type /help for commands.');
 
+  function escapeBlessed(s) {
+    return String(s).replace(/[{}]/g, '\\$&');
+  }
+
   /**
    * Write a plain-text log line into the chat widget.
    * Passed to logger.redirect() so all logger output goes through blessed
    * instead of raw stdout/stderr, which would corrupt the display.
    */
   function logToChat(msg) {
-    chat.add(`{#9bc3aa-fg}[log] ${msg}{/}`);
+    chat.add(`{#9bc3aa-fg}[log] ${escapeBlessed(msg)}{/}`);
     screen.render();
   }
 
