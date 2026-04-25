@@ -3,18 +3,19 @@ import path from 'node:path';
 
 dotenv.config();
 
-const VALID_PROVIDERS = ['ollama', 'openai', 'anthropic'];
+const VALID_PROVIDERS = ['ollama', 'openai', 'anthropic', 'ollama-cli'];
 const VALID_EXEC_POLICIES = ['off', 'allowlist', 'confirm', 'open'];
 
 /**
- * Parse a positive integer from an environment variable.
- * Throws with a clear message if the value is missing, not a number, or <= 0.
+ * Parse a non-negative integer from an environment variable.
+ * Throws with a clear message if the value is not a number or < 0.
+ * Empty string and undefined both fall through to defaultValue.
  */
-function requirePositiveInt(name, raw, defaultValue) {
+function requireNonNegativeInt(name, raw, defaultValue) {
   const value = raw !== undefined && raw !== '' ? Number(raw) : defaultValue;
-  if (!Number.isInteger(value) || value <= 0) {
+  if (!Number.isInteger(value) || value < 0) {
     throw new Error(
-      `Config error: ${name}="${raw}" is not a positive integer (got ${value})`
+      `Config error: ${name}="${raw}" is not a non-negative integer (got ${value})`
     );
   }
   return value;
@@ -22,27 +23,27 @@ function requirePositiveInt(name, raw, defaultValue) {
 
 export function loadConfig() {
   // ── Numeric fields ──────────────────────────────────────────────────────────
-  const maxHistory = requirePositiveInt(
+  const maxHistory = requireNonNegativeInt(
     'MAX_HISTORY',
     process.env.MAX_HISTORY,
     12
   );
-  const telegramPollIntervalMs = requirePositiveInt(
+  const telegramPollIntervalMs = requireNonNegativeInt(
     'TELEGRAM_POLL_INTERVAL_MS',
     process.env.TELEGRAM_POLL_INTERVAL_MS,
     2500
   );
-  const ollamaTimeoutMs = requirePositiveInt(
+  const ollamaTimeoutMs = requireNonNegativeInt(
     'OLLAMA_TIMEOUT_MS',
     process.env.OLLAMA_TIMEOUT_MS,
     45000
   );
-  const ollamaRetries = requirePositiveInt(
+  const ollamaRetries = requireNonNegativeInt(
     'OLLAMA_RETRIES',
     process.env.OLLAMA_RETRIES,
     1
   );
-  const execTimeoutMs = requirePositiveInt(
+  const execTimeoutMs = requireNonNegativeInt(
     'EXEC_TIMEOUT_MS',
     process.env.EXEC_TIMEOUT_MS,
     20000
