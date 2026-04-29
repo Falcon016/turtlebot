@@ -52,7 +52,7 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
     content: ''
   });
 
-  const quickHelp = blessed.box({
+  blessed.box({
     parent: sidebar,
     top: 9,
     left: 0,
@@ -113,7 +113,7 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
   }
 
   function latencyToken() {
-    if (lastLatencyMs == null) return '{#9bc3aa-fg}latency=n/a{/}';
+    if (lastLatencyMs === null) return '{#9bc3aa-fg}latency=n/a{/}';
     return `{#9bc3aa-fg}latency=${lastLatencyMs}ms{/}`;
   }
 
@@ -138,7 +138,11 @@ export function createTui({ onSubmit, onCommand, getStatus, minimal = false }) {
 
   function render() {
     renderOverview();
-    screen.render();
+    try {
+      screen.render();
+    } catch {
+      // screen.render() throws on resize race; ignore
+    }
   }
 
   function say(role, text) {
