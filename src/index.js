@@ -110,12 +110,15 @@ async function runCli() {
 
 function runTui({ minimal = false } = {}) {
   logger.info(`Starting TUI mode${minimal ? ' (minimal)' : ''}`);
-  createTui({
+  const { logToChat } = createTui({
     onSubmit: handleText,
     onCommand: (text) => handleCommand({ text, config, state, history }),
     getStatus: statusText,
     minimal
   });
+  // Redirect the logger so future log lines go into the blessed chat widget
+  // rather than raw stdout/stderr, which would corrupt the terminal display.
+  logger.redirect(logToChat);
 }
 
 if (argv.includes('--tui') || argv.includes('tui') || argv.includes('--tui-minimal')) {
