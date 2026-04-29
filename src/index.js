@@ -78,20 +78,39 @@ async function handleText(text) {
 async function runTelegram() {
   logger.info('Starting Telegram mode');
   let offset = 0;
+  let backoffMs = 0;
+  const MAX_BACKOFF_MS = 60_000;
+
   while (true) {
+    if (backoffMs > 0) {
+      logger.warn(`Telegram backoff: waiting ${backoffMs}ms before retry`);
+      await new Promise((r) => setTimeout(r, backoffMs));
+    }
+
     try {
       const updates = await getUpdates(config.telegramBotToken, offset);
+      backoffMs = 0; // reset on success
+
       for (const u of updates) {
         offset = u.update_id + 1;
         const text = u.message?.text;
         const chatId = u.message?.chat?.id;
         if (!text || !chatId) continue;
-        const reply = await handleText(text);
-        await sendMessage(config.telegramBotToken, chatId, reply);
+        try {
+          const reply = await handleText(text);
+          await sendMessage(config.telegramBotToken, chatId, reply);
+        } catch (sendErr) {
+          logger.error('Telegram send error:', sendErr.message);
+        }
       }
     } catch (e) {
       logger.error('Telegram poll error:', e.message);
+      backoffMs = backoffMs === 0
+        ? config.telegramPollIntervalMs
+        : Math.min(backoffMs * 2, MAX_BACKOFF_MS);
+      continue; // skip the normal poll interval delay; backoff handles it
     }
+
     await new Promise((r) => setTimeout(r, config.telegramPollIntervalMs));
   }
 }
